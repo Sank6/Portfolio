@@ -20,6 +20,7 @@ export default defineComponent({
 
 <style>
 html, body {
+  background: #2c2c2c;
   color: white;
   font-family: 'Open Sans', sans-serif;
   height: 200vh;
