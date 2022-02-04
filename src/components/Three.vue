@@ -68,6 +68,7 @@ export default defineComponent({
       diff: 0,
       lineRotation: 0,
       n: 15,
+      scrollY: window.scrollY,
     };
   },
   mounted() {
@@ -81,6 +82,7 @@ export default defineComponent({
 
     this.renderer.onBeforeRender(this.animate);
     window.addEventListener('scroll', this.onScroll);
+    window.addEventListener('resize', this.onResize);
   },
   methods: {
     animate() {
@@ -146,9 +148,6 @@ export default defineComponent({
       this.lineRotation = (this.lineRotation + 0.01) % (2 * Math.PI);
       if (this.line) this.line.rotation.z = this.lineRotation;
     },
-    onScroll(ev: any) {
-        this.lineRotation = (this.lineRotation + 0.05) % (2 * Math.PI);
-    },
     onload(model: any) {
         let scene = this.scene.scene;
         let self = this
@@ -156,7 +155,10 @@ export default defineComponent({
             if (child.type === 'Mesh') {
                 let edges = new EdgesGeometry( child.geometry );
                 self.line = new LineSegments( edges, new LineBasicMaterial( { color: 0x6f00ff, transparent: true, opacity: 1 } ) );
-                self.line.position.set(120, 120, 20);
+                // if mobile
+                if (window.innerWidth < 600) self.line.position.set(60, 80, 20);
+                else if (window.innerWidth < 1000) self.line.position.set(100, 80, 20);
+                else self.line.position.set(120, 100, 20);
                 self.line.scale.set(3, 3, 3);
                 self.line.rotateX(-Math.PI / 2);
                 scene.add(self.line);
@@ -164,6 +166,16 @@ export default defineComponent({
             }
         });
     },
+    onScroll() {
+        if (this.scrollY < window.scrollY) 
+          this.lineRotation = (this.lineRotation + 0.05) % (2 * Math.PI);
+        else if (this.scrollY > window.scrollY)
+          this.lineRotation = (this.lineRotation - 0.1) % (2 * Math.PI);
+        this.scrollY = window.scrollY;
+    },
+    onResize() {
+      location.reload();
+    }
   },
 });
 </script>
