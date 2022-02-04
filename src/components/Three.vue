@@ -174,7 +174,11 @@ export default defineComponent({
         this.scrollY = window.scrollY;
     },
     onResize() {
-      location.reload();
+      if (this.line) {
+        if (window.innerWidth < 600) this.line.position.set(60, 80, 20);
+        else if (window.innerWidth < 1000) this.line.position.set(100, 80, 20);
+        else this.line.position.set(120, 100, 20);
+      }
     }
   },
 });
