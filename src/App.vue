@@ -13,15 +13,15 @@
     <Scene ref="scene" background="#2c2c2c">
       <AmbientLight color="#ffffff" :intensity="0.8" />
 
-      <InstancedMesh ref="tubesZ" :count="this.n * this.n">
-        <BoxGeometry :width="0.5" :height="0.5" :depth="this.n * 3" />
+      <InstancedMesh ref="tubesZ" :count="n * n">
+        <BoxGeometry :width="0.5" :height="0.5" :depth="n * 3" />
         <LambertMaterial />
       </InstancedMesh>
-      <InstancedMesh ref="tubesY" :count="this.n * this.n">
-        <BoxGeometry :width="0.5" :height="0.5" :depth="this.n * 3" />
+      <InstancedMesh ref="tubesY" :count="  n * n">
+        <BoxGeometry :width="0.5" :height="0.5" :depth="n * 3" />
         <LambertMaterial />
       </InstancedMesh>
-      <InstancedMesh ref="spheres" :count="this.n ** 2">
+      <InstancedMesh ref="spheres" :count="n ** 2">
         <SphereGeometry :radius="2" />
         <LambertMaterial />
       </InstancedMesh>
