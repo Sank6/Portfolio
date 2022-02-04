@@ -68,6 +68,7 @@ export default defineComponent({
       camera: null as typeof Camera.camera | null,
       line: null as LineSegments<EdgesGeometry, LineBasicMaterial> | null,
       diff: 0,
+      lineRotation: 0,
       n: 15,
     };
   },
@@ -87,6 +88,7 @@ export default defineComponent({
     this.scene.scene.add(this.line);
 
     this.renderer.onBeforeRender(this.animate);
+    window.addEventListener('scroll', this.onScroll);
   },
   methods: {
     animate() {
@@ -149,7 +151,11 @@ export default defineComponent({
       this.diff = (this.diff + 0.02) % (2 * Math.PI);
 
       // spin the mesh
-      if (this.line) this.line.rotation.y += 0.005;
+      this.lineRotation = (this.lineRotation + 0.01) % (2 * Math.PI);
+      if (this.line) this.line.rotation.y = this.lineRotation;
+    },
+    onScroll(ev: any) {
+        this.lineRotation = (this.lineRotation + 0.05) % (2 * Math.PI);
     },
   },
 });
@@ -164,7 +170,7 @@ canvas {
   display: block;
 }
 #bg {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;

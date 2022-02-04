@@ -1,6 +1,6 @@
 <template>
   <nav-bar />
-  <three />
+  <three class="three" />
   <div>
     <h1>Sankarsh Makam</h1>
   </div>
@@ -19,9 +19,13 @@ export default defineComponent({
 </script>
 
 <style>
-body {
+html, body {
   color: white;
   font-family: 'Open Sans', sans-serif;
+  height: 200vh;
+  width: 100vw;
+  margin: 0;
+  overflow-x: hidden;
 }
 </style>
 
