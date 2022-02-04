@@ -22,11 +22,7 @@
           <SphereGeometry :radius="2" />
           <LambertMaterial />
         </InstancedMesh>
-        <!--
-        <Sphere ref="mainmesh" :radius="40" :position="{ x: 120, y: 120, z: 20 }" :widthSegments="20" :heightSegments="20">
-            <BasicMaterial color="#6f00ff" :props="{ wireframe: true, transparent: true, opacity: 1 }" />
-        </Sphere>
-        -->
+        <GltfModel src="/klein_bottle.gltf" @load="onload" />
       </Scene>
     </Renderer>
   </div>
@@ -45,6 +41,7 @@ import {
   BoxGeometry,
   LambertMaterial,
   AmbientLight,
+  GltfModel,
 } from 'troisjs';
 
 export default defineComponent({
@@ -57,6 +54,7 @@ export default defineComponent({
     BoxGeometry,
     LambertMaterial,
     AmbientLight,
+    GltfModel,
   },
   setup() {
     return {
@@ -80,12 +78,6 @@ export default defineComponent({
     this.renderer.renderer.setClearColor(new Color(0x050505));
     this.scene = this.$refs.scene as typeof Scene.scene;
     this.camera = this.$refs.camera as typeof Camera.camera;
-
-    const geometry = new SG(40, 25, 25);
-    const edges = new EdgesGeometry( geometry );
-    this.line = new LineSegments( edges, new LineBasicMaterial( { color: 0x6f00ff, transparent: true, opacity: 1 } ) );
-    this.line.position.set(120, 120, 20);
-    this.scene.scene.add(this.line);
 
     this.renderer.onBeforeRender(this.animate);
     window.addEventListener('scroll', this.onScroll);
@@ -152,10 +144,25 @@ export default defineComponent({
 
       // spin the mesh
       this.lineRotation = (this.lineRotation + 0.01) % (2 * Math.PI);
-      if (this.line) this.line.rotation.y = this.lineRotation;
+      if (this.line) this.line.rotation.z = this.lineRotation;
     },
     onScroll(ev: any) {
         this.lineRotation = (this.lineRotation + 0.05) % (2 * Math.PI);
+    },
+    onload(model: any) {
+        let scene = this.scene.scene;
+        let self = this
+        model.traverse(function (child: any) {
+            if (child.type === 'Mesh') {
+                let edges = new EdgesGeometry( child.geometry );
+                self.line = new LineSegments( edges, new LineBasicMaterial( { color: 0x6f00ff, transparent: true, opacity: 1 } ) );
+                self.line.position.set(120, 120, 20);
+                self.line.scale.set(3, 3, 3);
+                self.line.rotateX(-Math.PI / 2);
+                scene.add(self.line);
+                child.visible = false;
+            }
+        });
     },
   },
 });
