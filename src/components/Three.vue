@@ -186,8 +186,12 @@ export default defineComponent({
       else if (this.scrollY > window.scrollY)
         this.lineRotation = (this.lineRotation - 0.1) % (2 * Math.PI);
       this.scrollY = window.scrollY;
-      this.camera.camera.zoom = 1 + window.scrollY / (document.body.clientHeight * 2);
+      let scrollFrac = window.scrollY / (document.documentElement.clientHeight * 2);
+      this.camera.camera.zoom = 1 + scrollFrac * 0.5;
       this.camera.camera.updateProjectionMatrix();
+      if (this.renderer) {
+        this.renderer.renderer.domElement.style.filter = `blur(${scrollFrac * 20}px)`;
+      }
     },
     onResize() {
       if (this.line) {

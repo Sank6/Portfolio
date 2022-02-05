@@ -1,8 +1,8 @@
 <template>
   <div id="navbar">
     <div class="container">
-        <a href="#">About</a>
-        <a href="#">Projects</a>
+        <a href="#projects">Projects</a>
+        <a href="#">Resume</a>
         <a href="#">Contact</a>
     </div>
   </div>
