@@ -5,7 +5,7 @@
     <div class="content">
       <div>
         <h1 id="name">Sankarsh Makam</h1>
-        <h2>🏢 University of Bristol</h2>
+        <h2>🏢 Student at University of Bristol</h2>
       </div>
     </div>
     <div id="projects" class="content">
@@ -57,8 +57,8 @@ h1 {
 }
 
 h2 {
-  font-weight: 700;
-  font-size: 1.75rem;
+  font-weight: 500;
+  font-size: 1.25rem;
 }
 
 p {
