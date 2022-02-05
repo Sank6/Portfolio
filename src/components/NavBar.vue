@@ -1,9 +1,11 @@
 <template>
+  <div id="navbar">
     <div class="container">
         <a href="#">About</a>
         <a href="#">Projects</a>
         <a href="#">Contact</a>
     </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -14,6 +16,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
+#navbar {
+  position: fixed;
+  width: 100%;
+}
+
 .container {
   float: right;
   margin: 30px;
@@ -22,13 +29,13 @@ export default defineComponent({
 a {
     text-decoration: none;
     color: white;
-    border: 2px solid #4c4c4c;
+    border-bottom: 2px solid #3e3e3e;
     padding: 10px 20px;
     margin: 10px;
     transition: 400ms ease all;
 }
 
 a:hover {
-    background-color: #4c4c4c;
+    border-color: white;
 }
 </style>

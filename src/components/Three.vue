@@ -7,7 +7,7 @@
         :look-at="{ x: 60, y: 120, z: 20 }"
         :far="2000"
       />
-      <Scene ref="scene" background="#2c2c2c">
+      <Scene ref="scene" background="#1f1f1f">
         <AmbientLight color="#ffffff" :intensity="0.8" />
 
         <InstancedMesh ref="tubesZ" :count="n * n">
@@ -30,7 +30,13 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { Object3D, Color, SphereGeometry as SG, EdgesGeometry, LineSegments, LineBasicMaterial } from 'three';
+import {
+  Object3D,
+  Color,
+  EdgesGeometry,
+  LineSegments,
+  LineBasicMaterial
+} from 'three';
 import {
   Camera,
   Renderer,
@@ -92,7 +98,6 @@ export default defineComponent({
       let waves = 2;
       const dummy = new Object3D();
       for (let x = 0; x < this.n; x++) {
-        let xs = [];
         for (let z = 0; z < this.n; z++) {
           let y = Math.sin(((x + z) / 30) * 2 * waves * Math.PI + this.diff);
           y *= intensifier;
@@ -120,7 +125,7 @@ export default defineComponent({
 
           dummy.updateMatrix();
           this.tubesZ?.setMatrixAt(15 * x + z, dummy.matrix);
-          this.tubesZ?.setColorAt(15 * x + z, new Color(0x4c4c4c));
+          this.tubesZ?.setColorAt(15 * x + z, new Color(0x3e3e3e));
         }
       }
       if (this.tubesZ) this.tubesZ.instanceMatrix.needsUpdate = true;
@@ -137,7 +142,7 @@ export default defineComponent({
 
           dummy.updateMatrix();
           this.tubesY?.setMatrixAt(15 * x + z, dummy.matrix);
-          this.tubesY?.setColorAt(15 * x + z, new Color(0x4c4c4c));
+          this.tubesY?.setColorAt(15 * x + z, new Color(0x3e3e3e));
         }
       }
       if (this.tubesY) this.tubesY.instanceMatrix.needsUpdate = true;
@@ -149,29 +154,40 @@ export default defineComponent({
       if (this.line) this.line.rotation.z = this.lineRotation;
     },
     onload(model: any) {
-        let scene = this.scene.scene;
-        let self = this
-        model.traverse(function (child: any) {
-            if (child.type === 'Mesh') {
-                let edges = new EdgesGeometry( child.geometry );
-                self.line = new LineSegments( edges, new LineBasicMaterial( { color: 0x6f00ff, transparent: true, opacity: 1 } ) );
-                // if mobile
-                if (window.innerWidth < 600) self.line.position.set(60, 80, 20);
-                else if (window.innerWidth < 1000) self.line.position.set(100, 80, 20);
-                else self.line.position.set(120, 100, 20);
-                self.line.scale.set(3, 3, 3);
-                self.line.rotateX(-Math.PI / 2);
-                scene.add(self.line);
-                child.visible = false;
-            }
-        });
+      let scene = this.scene.scene;
+      let self = this;
+      model.traverse(function (child: any) {
+        if (child.type === 'Mesh') {
+          let edges = new EdgesGeometry(child.geometry);
+          self.line = new LineSegments(
+            edges,
+            new LineBasicMaterial({
+              color: 0x6f00ff,
+              transparent: true,
+              opacity: 1,
+            })
+          );
+          // if mobile
+          if (window.innerWidth < 600) self.line.position.set(60, 100, 20);
+          else if (window.innerWidth < 1000)
+            self.line.position.set(100, 100, 20);
+          else self.line.position.set(120, 120, 20);
+          self.line.scale.set(3, 3, 3);
+          self.line.rotateX(-Math.PI / 2);
+          self.line.rotateY(Math.PI);
+          scene.add(self.line);
+          child.visible = false;
+        }
+      });
     },
     onScroll() {
-        if (this.scrollY < window.scrollY) 
-          this.lineRotation = (this.lineRotation + 0.05) % (2 * Math.PI);
-        else if (this.scrollY > window.scrollY)
-          this.lineRotation = (this.lineRotation - 0.1) % (2 * Math.PI);
-        this.scrollY = window.scrollY;
+      if (this.scrollY < window.scrollY)
+        this.lineRotation = (this.lineRotation + 0.05) % (2 * Math.PI);
+      else if (this.scrollY > window.scrollY)
+        this.lineRotation = (this.lineRotation - 0.1) % (2 * Math.PI);
+      this.scrollY = window.scrollY;
+      this.camera.camera.zoom = 1 + window.scrollY / (document.body.clientHeight * 2);
+      this.camera.camera.updateProjectionMatrix();
     },
     onResize() {
       if (this.line) {
@@ -179,7 +195,7 @@ export default defineComponent({
         else if (window.innerWidth < 1000) this.line.position.set(100, 80, 20);
         else this.line.position.set(120, 100, 20);
       }
-    }
+    },
   },
 });
 </script>
@@ -193,11 +209,11 @@ canvas {
   display: block;
 }
 #bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
 </style>
