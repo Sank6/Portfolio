@@ -16,7 +16,7 @@ export default defineComponent({
 <style scoped>
 .container {
   float: right;
-  margin: -10px 30px;
+  margin: 30px;
 }
 
 a {

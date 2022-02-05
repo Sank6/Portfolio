@@ -1,8 +1,10 @@
 <template>
-  <nav-bar />
   <three class="three" />
-  <div>
-    <h1>Sankarsh Makam</h1>
+  <div id="content">
+    <nav-bar />
+    <div>
+      <h1>Sankarsh Makam</h1>
+    </div>
   </div>
 </template>
 
@@ -41,6 +43,14 @@ h1 {
 
 h1::after {
   content: ".";
+}
+
+#content {
+  z-index: 10;
+  position: absolute;
+  width: 100vw;
+  top: 0;
+  left: 0;
 }
 
 /* mobile */
