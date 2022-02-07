@@ -1,0 +1,37 @@
+[
+    {
+        "title": "Discord Bot List",
+        "image": "https://raw.githubusercontent.com/Sank6/Discord-Bot-List/master/screenshots/dark.png",
+        "date": "1535842800000",
+        "link": "https://github.com/Sank6/Discord-Bot-List/",
+        "description": "A bot listing site built on Express with Pug rendering engine. Supports Discord OAuth. Bots are stored in a MongoDB server. Admins use a Discord bot to manage and verify bots along with some web interfaces.",
+        "technologies": [
+            "Node.js",
+            "Express",
+            "Pug",
+            "MongoDB"
+        ]
+    },
+    {
+        "title": "Nickel",
+        "image": "https://raw.githubusercontent.com/Sank6/Nickel/master/screenshots/caesar.png",
+        "date": "1588978800000",
+        "link": "https://github.com/Sank6/Nickel/",
+        "description": "An ElectronJS app to encode, decode and auto solve ciphers. Analyse properties of the text to identify the cipher or solve manually.",
+        "technologies": [
+            "Node.js",
+            "Electron"
+        ]
+    },
+    {
+        "title": "Periodic Table",
+        "image": "https://periodic-table.ooo/assets/images/demo.gif",
+        "date": "1574553600000",
+        "link": "https://periodic-table.ooo/",
+        "description": "A frontend-only site that generates an A-Level periodic table from a JSON file with detailed information each element. ",
+        "technologies": [
+            "Javascript",
+            "Css3"
+        ]
+    }
+]

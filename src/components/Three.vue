@@ -173,7 +173,7 @@ export default defineComponent({
             self.line.position.set(100, 100, 20);
           else self.line.position.set(120, 120, 20);
           self.line.scale.set(3, 3, 3);
-          self.line.rotateX(-Math.PI / 2);
+          self.line.rotateX(Math.PI / 2);
           self.line.rotateY(Math.PI);
           scene.add(self.line);
           child.visible = false;

@@ -3,13 +3,13 @@
   <div id="main">
     <nav-bar />
     <div class="content">
-      <div>
+      <div class="content-container">
         <h1 id="name">Sankarsh Makam</h1>
         <h2>🏢 Student at University of Bristol</h2>
       </div>
     </div>
     <div id="projects" class="content">
-      <div>
+      <div class="content-container">
         <h1>Projects</h1>
       </div>
     </div>
@@ -20,6 +20,7 @@
 import { defineComponent } from 'vue';
 import Three from './components/Three.vue';
 import NavBar from './components/NavBar.vue';
+
 export default defineComponent({
   components: {
     Three,
@@ -78,9 +79,18 @@ p {
   height: 100vh;
 }
 
-.content div {
-  
+.content .content-container {
   padding: 7%;
+}
+
+#projects .content-container {
+  padding: 2% 7%;
+}
+
+#card-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
 /* mobile */
