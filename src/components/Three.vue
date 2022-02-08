@@ -1,6 +1,6 @@
 <template>
   <div id="bg">
-    <Renderer ref="renderer" antialias resize="window">
+    <Renderer ref="renderer" antialias resize="window" :pointer="{ onMove }">
       <Camera
         ref="camera"
         :position="{ x: 160, y: 200, z: 160 }"
@@ -35,7 +35,9 @@ import {
   Color,
   EdgesGeometry,
   LineSegments,
-  LineBasicMaterial
+  LineBasicMaterial,
+  Vector3,
+  Euler,
 } from 'three';
 import {
   Camera,
@@ -50,6 +52,15 @@ import {
   GltfModel,
 } from 'troisjs';
 
+interface Project {
+  title: string;
+  image: string;
+  date: number;
+  link: string;
+  description: string;
+  technologies: string;
+}
+
 export default defineComponent({
   components: {
     Camera,
@@ -62,6 +73,12 @@ export default defineComponent({
     AmbientLight,
     GltfModel,
   },
+  props: {
+    projects: {
+      type: Array as () => Project[],
+      required: true,
+    },
+  },
   setup() {
     return {
       spheres: null as typeof InstancedMesh.mesh | null,
@@ -71,13 +88,25 @@ export default defineComponent({
       scene: null as typeof Scene.scene | null,
       camera: null as typeof Camera.camera | null,
       line: null as LineSegments<EdgesGeometry, LineBasicMaterial> | null,
+      hideTubes: false,
+      cameraPos: {
+        start: new Vector3(160, 200, 160),
+        end: new Vector3(150, 200, 150),
+      },
+      cameraRotation: {
+        start: new Vector3(0, 0, 0),
+        end: new Vector3(-1, 0, 0),
+      },
       diff: 0,
       lineRotation: 0,
       n: 15,
       scrollY: window.scrollY,
+      scrollFrac: 0,
+      projectDots: [new Vector3(0, 0, 0)],
     };
   },
   mounted() {
+
     this.spheres = (this.$refs.spheres as typeof InstancedMesh).mesh;
     this.tubesZ = (this.$refs.tubesZ as typeof InstancedMesh).mesh;
     this.tubesY = (this.$refs.tubesY as typeof InstancedMesh).mesh;
@@ -85,12 +114,28 @@ export default defineComponent({
     this.renderer.renderer.setClearColor(new Color(0x050505));
     this.scene = this.$refs.scene as typeof Scene.scene;
     this.camera = this.$refs.camera as typeof Camera.camera;
+    
+    this.cameraRotation.start.copy(this.camera.camera.rotation);
+
+    this.calculate();
 
     this.renderer.onBeforeRender(this.animate);
     window.addEventListener('scroll', this.onScroll);
     window.addEventListener('resize', this.onResize);
   },
   methods: {
+    calculate() {
+      let dates = []
+      for (let p of this.projects) dates.push(new Date(p.date));
+      dates = dates.sort((a, b) => a.getTime() - b.getTime())
+      let startYear = (new Date(String(dates[0].getFullYear()))).getTime();
+      let endYear = (new Date(String(new Date().getFullYear()))).getTime();
+      this.projectDots = [];
+      for (let p of this.projects) {
+        let frac = (new Date(p.date).getTime() - startYear) / (endYear - startYear);
+        this.projectDots.push(new Vector3(frac * 300 , 0, -20));
+      }
+    },
     animate() {
       // Draw spheres
       let x0 = -this.n * 14 * 1.5;
@@ -101,7 +146,12 @@ export default defineComponent({
         for (let z = 0; z < this.n; z++) {
           let y = Math.sin(((x + z) / 30) * 2 * waves * Math.PI + this.diff);
           y *= intensifier;
-          dummy.position.set(x0 + x * this.n * 3, y, x0 + z * this.n * 3);
+          let startpos = new Vector3(x0 + x * this.n * 3, y, x0 + z * this.n * 3);
+          let endpos = this.projectDots.sort((a, b) => {
+            return a.distanceTo(startpos) - b.distanceTo(startpos)
+          })[0]
+          let lerped = startpos.lerp(endpos, this.scrollFrac);
+          dummy.position.copy(lerped);
           dummy.updateMatrix();
           this.spheres?.setMatrixAt(this.n * x + z, dummy.matrix);
           this.spheres?.setColorAt(this.n * x + z, new Color(0xfbc31c));
@@ -109,7 +159,7 @@ export default defineComponent({
       }
       if (this.spheres) this.spheres.instanceMatrix.needsUpdate = true;
 
-      // Draw tubes Z
+      // Draw "tubes"
       let pointA = new Object3D(),
         pointB = new Object3D();
       for (let x = 0; x < this.n; x++) {
@@ -121,14 +171,15 @@ export default defineComponent({
           pointB.position.setFromMatrixPosition(pointB.matrix);
 
           dummy.position.lerpVectors(pointA.position, pointB.position, 0.5);
+          if (!this.hideTubes) dummy.scale.set(1, 1, pointA.position.distanceTo(pointB.position) / (this.n * 3));
+          else dummy.scale.set(0, 0, 0);
           dummy.lookAt(pointA.position);
-
+   
           dummy.updateMatrix();
           this.tubesZ?.setMatrixAt(15 * x + z, dummy.matrix);
           this.tubesZ?.setColorAt(15 * x + z, new Color(0x3e3e3e));
         }
       }
-      if (this.tubesZ) this.tubesZ.instanceMatrix.needsUpdate = true;
       for (let x = 0; x <= this.n - 1; x++) {
         for (let z = 0; z < this.n; z++) {
           this.spheres?.getMatrixAt(this.n * x + z, pointA.matrix);
@@ -138,6 +189,8 @@ export default defineComponent({
           pointB.position.setFromMatrixPosition(pointB.matrix);
 
           dummy.position.lerpVectors(pointA.position, pointB.position, 0.5);
+          if (!this.hideTubes) dummy.scale.set(1, 1, pointA.position.distanceTo(pointB.position) / (this.n * 3));
+          else dummy.scale.set(0, 0, 0);
           dummy.lookAt(pointB.position);
 
           dummy.updateMatrix();
@@ -145,11 +198,11 @@ export default defineComponent({
           this.tubesY?.setColorAt(15 * x + z, new Color(0x3e3e3e));
         }
       }
+      if (this.tubesZ) this.tubesZ.instanceMatrix.needsUpdate = true;
       if (this.tubesY) this.tubesY.instanceMatrix.needsUpdate = true;
 
       this.diff = (this.diff + 0.02) % (2 * Math.PI);
 
-      // spin the mesh
       this.lineRotation = (this.lineRotation + 0.01) % (2 * Math.PI);
       if (this.line) this.line.rotation.z = this.lineRotation;
     },
@@ -177,6 +230,7 @@ export default defineComponent({
           self.line.rotateY(Math.PI);
           scene.add(self.line);
           child.visible = false;
+          self.onScroll();
         }
       });
     },
@@ -186,12 +240,22 @@ export default defineComponent({
       else if (this.scrollY > window.scrollY)
         this.lineRotation = (this.lineRotation - 0.1) % (2 * Math.PI);
       this.scrollY = window.scrollY;
-      let scrollFrac = window.scrollY / (document.documentElement.clientHeight * 2);
-      this.camera.camera.zoom = 1 + scrollFrac * 0.5;
-      this.camera.camera.updateProjectionMatrix();
-      if (this.renderer) {
-        this.renderer.renderer.domElement.style.filter = `blur(${scrollFrac * 20}px)`;
+      this.scrollFrac = Math.min(window.scrollY / window.innerHeight, 1);
+      if (this.line) this.line.material.opacity = 1 - this.scrollFrac * 2;
+      if (this.tubesY) this.tubesY.material.opacity = 1 - this.scrollFrac;
+      if (this.tubesZ) this.tubesZ.material.opacity = 1 - this.scrollFrac;
+      if (this.camera) {
+        let lookAt = new Vector3(0, 0, 0);
+        lookAt.lerpVectors(this.cameraRotation.start, this.cameraRotation.end, this.scrollFrac);
+        this.camera.camera.rotation.copy(new Euler().setFromVector3(lookAt));
+        let pos = new Vector3(0, 0, 0);
+        pos.lerpVectors(this.cameraPos.start, this.cameraPos.end, this.scrollFrac);
+        this.camera.camera.position.copy(pos);
+        this.camera.camera.updateProjectionMatrix();
       }
+      if (this.scrollFrac > 0.9) this.hideTubes = true;
+      else this.hideTubes = false;
+
     },
     onResize() {
       if (this.line) {
@@ -199,6 +263,9 @@ export default defineComponent({
         else if (window.innerWidth < 1000) this.line.position.set(100, 80, 20);
         else this.line.position.set(120, 100, 20);
       }
+    },
+    onMove(e: any) {
+      console.log(e);
     },
   },
 });

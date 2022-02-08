@@ -1,5 +1,5 @@
 <template>
-  <three class="three" />
+  <three class="three" :projects="data" />
   <div id="main">
     <nav-bar />
     <div class="content">
@@ -21,10 +21,17 @@ import { defineComponent } from 'vue';
 import Three from './components/Three.vue';
 import NavBar from './components/NavBar.vue';
 
+import data from '../public/projects.json';
+
 export default defineComponent({
   components: {
     Three,
     NavBar,
+  },
+  data() {
+    return {
+      data,
+    };
   },
 });
 </script>
