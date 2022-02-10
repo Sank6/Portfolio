@@ -1,5 +1,5 @@
 <template>
-  <three class="three" :projects="data" />
+  <Background class="three" :projects="data" />
   <div id="main">
     <nav-bar />
     <div class="content">
@@ -18,14 +18,14 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import Three from './components/Three.vue';
+import Background from './components/Three.vue';
 import NavBar from './components/NavBar.vue';
 
 import data from '../public/projects.json';
 
 export default defineComponent({
   components: {
-    Three,
+    Background,
     NavBar,
   },
   data() {
@@ -62,16 +62,19 @@ body {
 h1 {
   font-weight: 700;
   font-size: 5rem;
+  pointer-events: all;
 }
 
 h2 {
   font-weight: 500;
   font-size: 1.25rem;
+  pointer-events: all;
 }
 
 p {
   max-width: 50%;
   font-size: 1.25rem;
+  pointer-events: all;
 }
 
 #main {
@@ -80,6 +83,7 @@ p {
   width: 100vw;
   top: 0;
   left: 0;
+  pointer-events: none;
 }
 
 .content {
@@ -104,6 +108,12 @@ p {
 @media only screen and (max-width: 600px) {
   h1 {
     padding: 50px 3%;
+  }
+  .content .content-container {
+    padding: 3%;
+  }
+  #projects .content-container {
+    padding: 2% 3%;
   }
 }
 </style>

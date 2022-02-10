@@ -1,10 +1,10 @@
 <template>
   <div id="bg">
-    <Renderer ref="renderer" antialias resize="window" :pointer="{ onMove }">
+    <Renderer ref="renderer" antialias resize="window" >
       <Camera
         ref="camera"
         :position="{ x: 160, y: 200, z: 160 }"
-        :look-at="{ x: 60, y: 120, z: 20 }"
+        :look-at="{ x: 0, y: 0, z: 0 }"
         :far="2000"
       />
       <Scene ref="scene" background="#1f1f1f">
@@ -22,6 +22,12 @@
           <SphereGeometry :radius="2" />
           <LambertMaterial />
         </InstancedMesh>
+        <Box ref="box" :width="0.5" :height="0.5" :depth="1000">
+          <BasicMaterial color="#3e3e3e" :props="{ transparent: true, opacity: 0 }" />
+        </Box>
+        <Sphere :radius="2" v-for="i in projects.length" v-bind:key="i" :ref="`dot-${i}`" @pointerEnter="enter(i)" @pointerLeave="leave(i)">
+          <BasicMaterial color="#fbc31c" :props="{ transparent: true, opacity: 0 }" />
+        </Sphere>
         <GltfModel src="/klein_bottle.gltf" @load="onload" />
       </Scene>
     </Renderer>
@@ -38,6 +44,8 @@ import {
   LineBasicMaterial,
   Vector3,
   Euler,
+  Vector2,
+  Raycaster,
 } from 'three';
 import {
   Camera,
@@ -45,8 +53,11 @@ import {
   RendererPublicInterface,
   Scene,
   InstancedMesh,
+  Sphere,
   SphereGeometry,
+  Box,
   BoxGeometry,
+  BasicMaterial,
   LambertMaterial,
   AmbientLight,
   GltfModel,
@@ -67,8 +78,11 @@ export default defineComponent({
     Renderer,
     Scene,
     InstancedMesh,
+    Sphere,
     SphereGeometry,
+    Box,
     BoxGeometry,
+    BasicMaterial,
     LambertMaterial,
     AmbientLight,
     GltfModel,
@@ -88,6 +102,8 @@ export default defineComponent({
       scene: null as typeof Scene.scene | null,
       camera: null as typeof Camera.camera | null,
       line: null as LineSegments<EdgesGeometry, LineBasicMaterial> | null,
+      box: null as typeof Box | null,
+      dots: [] as typeof Sphere[],
       hideTubes: false,
       cameraPos: {
         start: new Vector3(160, 200, 160),
@@ -103,10 +119,12 @@ export default defineComponent({
       scrollY: window.scrollY,
       scrollFrac: 0,
       projectDots: [new Vector3(0, 0, 0)],
+      pointer: new Vector2(0, 0),
+      raycaster: new Raycaster(),
+      firstDraw: 0,
     };
   },
   mounted() {
-
     this.spheres = (this.$refs.spheres as typeof InstancedMesh).mesh;
     this.tubesZ = (this.$refs.tubesZ as typeof InstancedMesh).mesh;
     this.tubesY = (this.$refs.tubesY as typeof InstancedMesh).mesh;
@@ -114,29 +132,43 @@ export default defineComponent({
     this.renderer.renderer.setClearColor(new Color(0x050505));
     this.scene = this.$refs.scene as typeof Scene.scene;
     this.camera = this.$refs.camera as typeof Camera.camera;
-    
+    this.box = this.$refs.box as typeof Box;
+
+    for (let i = 1; i <= this.projects.length; i++) {
+      if (this.$refs[`dot-${i}`]) this.dots.push(this.$refs[`dot-${i}`] as typeof Sphere);
+    }
+
+    this.camera.camera.lookAt(new Vector3(60, 120, 20));
     this.cameraRotation.start.copy(this.camera.camera.rotation);
-
-    this.calculate();
-
+    this.scrollFrac = 1;
+    this.updateScroll();
+    
     this.renderer.onBeforeRender(this.animate);
     window.addEventListener('scroll', this.onScroll);
     window.addEventListener('resize', this.onResize);
+    window.addEventListener( 'mousemove', this.onMove );
   },
   methods: {
     calculate() {
+      if (this.firstDraw <= 1) return; 
       let dates = []
       for (let p of this.projects) dates.push(new Date(p.date));
       dates = dates.sort((a, b) => a.getTime() - b.getTime())
       let startYear = (new Date(String(dates[0].getFullYear()))).getTime();
       let endYear = (new Date(String(new Date().getFullYear()))).getTime();
       this.projectDots = [];
-      for (let p of this.projects) {
+      for (let i in this.projects) {
+        let p = this.projects[i];
         let frac = (new Date(p.date).getTime() - startYear) / (endYear - startYear);
         this.projectDots.push(new Vector3(frac * 300 , 0, -20));
+        this.dots[i].mesh.position.copy(this.projectDots[i]);
       }
+      this.box?.mesh.position.set(-50, 0, -20);
+      this.box?.mesh.lookAt(this.projectDots[this.projectDots.length - 1]);
+      this.onScroll();
     },
     animate() {
+      if (!this.spheres) return;
       // Draw spheres
       let x0 = -this.n * 14 * 1.5;
       let intensifier = 5;
@@ -147,9 +179,7 @@ export default defineComponent({
           let y = Math.sin(((x + z) / 30) * 2 * waves * Math.PI + this.diff);
           y *= intensifier;
           let startpos = new Vector3(x0 + x * this.n * 3, y, x0 + z * this.n * 3);
-          let endpos = this.projectDots.sort((a, b) => {
-            return a.distanceTo(startpos) - b.distanceTo(startpos)
-          })[0]
+          let endpos = this.projectDots.sort((a, b) => a.distanceTo(startpos) - b.distanceTo(startpos))[0]
           let lerped = startpos.lerp(endpos, this.scrollFrac);
           dummy.position.copy(lerped);
           dummy.updateMatrix();
@@ -205,6 +235,11 @@ export default defineComponent({
 
       this.lineRotation = (this.lineRotation + 0.01) % (2 * Math.PI);
       if (this.line) this.line.rotation.z = this.lineRotation;
+      
+      if (this.firstDraw < 2) {
+        this.firstDraw ++;
+        this.calculate();
+      }
     },
     onload(model: any) {
       let scene = this.scene.scene;
@@ -221,7 +256,7 @@ export default defineComponent({
             })
           );
           // if mobile
-          if (window.innerWidth < 600) self.line.position.set(60, 100, 20);
+          if (window.innerWidth < 600) self.line.position.set(60, 50, 20);
           else if (window.innerWidth < 1000)
             self.line.position.set(100, 100, 20);
           else self.line.position.set(120, 120, 20);
@@ -241,6 +276,9 @@ export default defineComponent({
         this.lineRotation = (this.lineRotation - 0.1) % (2 * Math.PI);
       this.scrollY = window.scrollY;
       this.scrollFrac = Math.min(window.scrollY / window.innerHeight, 1);
+      this.updateScroll();
+    },
+    updateScroll() {
       if (this.line) this.line.material.opacity = 1 - this.scrollFrac * 2;
       if (this.tubesY) this.tubesY.material.opacity = 1 - this.scrollFrac;
       if (this.tubesZ) this.tubesZ.material.opacity = 1 - this.scrollFrac;
@@ -248,14 +286,25 @@ export default defineComponent({
         let lookAt = new Vector3(0, 0, 0);
         lookAt.lerpVectors(this.cameraRotation.start, this.cameraRotation.end, this.scrollFrac);
         this.camera.camera.rotation.copy(new Euler().setFromVector3(lookAt));
-        let pos = new Vector3(0, 0, 0);
-        pos.lerpVectors(this.cameraPos.start, this.cameraPos.end, this.scrollFrac);
-        this.camera.camera.position.copy(pos);
         this.camera.camera.updateProjectionMatrix();
       }
       if (this.scrollFrac > 0.9) this.hideTubes = true;
       else this.hideTubes = false;
 
+      for (let d of this.dots) {
+        d.mesh.material.opacity = (this.scrollFrac - 0.875) * 8;
+        d.mesh.scale.set((this.scrollFrac - 0.5) * 2, (this.scrollFrac - 0.5) * 2, (this.scrollFrac - 0.5) * 2);
+      }
+
+      if (this.scrollFrac == 1) this.spheres.visible = false;
+      else this.spheres.visible = true;
+
+      if (this.box) {
+        this.box.mesh.material.opacity = (this.scrollFrac - 0.5) * 2;
+        this.box.mesh.scale.set((this.scrollFrac - 0.5) * 2, (this.scrollFrac - 0.5) * 2, (this.scrollFrac - 0.5) * 2);
+      }
+
+      if (window.innerWidth < 600) this.camera.camera.fov = 50 + 50 * this.scrollFrac;
     },
     onResize() {
       if (this.line) {
@@ -264,9 +313,22 @@ export default defineComponent({
         else this.line.position.set(120, 100, 20);
       }
     },
-    onMove(e: any) {
-      console.log(e);
+    onMove(e: MouseEvent) {
+				this.pointer.x = ( e.clientX / window.innerWidth ) * 2 - 1;
+				this.pointer.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
     },
+    enter(i: number) {
+      if (this.scrollFrac == 1) {
+        this.dots[i - 1].mesh.material.color.set(0xff0000);
+        this.dots[i-1].mesh.scale.set(1.5, 1.5, 1.5);
+        document.body.style.cursor = "pointer";
+      }
+    },
+    leave(i: number) {
+      this.dots[i - 1].mesh.material.color.set(0xfbc31c);
+      this.dots[i-1].mesh.scale.set(1, 1, 1);
+      document.body.style.cursor = "auto";
+    }
   },
 });
 </script>

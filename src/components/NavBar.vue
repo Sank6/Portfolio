@@ -19,6 +19,7 @@ export default defineComponent({
 #navbar {
   position: fixed;
   width: 100%;
+  pointer-events: all;
 }
 
 .container {
