@@ -1,5 +1,5 @@
 <template>
-  <Background class="three" :projects="data" />
+  <three class="three" :projects="data" />
   <div id="main">
     <nav-bar />
     <div class="content">
