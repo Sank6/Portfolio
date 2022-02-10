@@ -18,19 +18,28 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import Background from './components/Three.vue';
+import Three from './components/Three.vue';
 import NavBar from './components/NavBar.vue';
 
 import data from '../public/projects.json';
 
+interface Project {
+  title: string;
+  image: string;
+  date: number;
+  link: string;
+  description: string;
+  technologies: string[];
+}
+
 export default defineComponent({
   components: {
-    Background,
+    Three,
     NavBar,
   },
   data() {
     return {
-      data,
+      data: data as Project[],
     };
   },
 });

@@ -69,7 +69,7 @@ interface Project {
   date: number;
   link: string;
   description: string;
-  technologies: string;
+  technologies: string[];
 }
 
 export default defineComponent({
