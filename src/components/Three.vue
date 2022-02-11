@@ -280,7 +280,7 @@ export default defineComponent({
     },
     onScroll() {
       this.scrollFrac = window.scrollY / window.innerHeight;
-      if (((this.scrollFrac < 1 && this.scrollFrac > 0.7 && this.scrollY < window.scrollY) || (this.scrollFrac > 1 && this.scrollFrac < 1.3 && this.scrollY > window.scrollY)) && this.userScroll) {
+      if (((this.scrollFrac < 1 && this.scrollFrac > 0.7 && 1 > this.scrollY) || (this.scrollFrac > 1 && this.scrollFrac < 1.3 && this.scrollY > 1)) && this.userScroll) {
         window.scrollTo(0,window.innerHeight);
         this.userScroll = false;
         setTimeout(() => {

@@ -205,6 +205,8 @@ a:focus {
 
 .icon:hover svg {
   transform: translateY(-10px);
+  color: #fbc31c;
+  filter: drop-shadow(0px 0px 2px #fbc31c);
 }
 
 /* mobile */
