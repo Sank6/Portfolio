@@ -52,7 +52,6 @@ export default defineComponent({
     select(i: number) {
       for (let j = 0; j < this.data.length; j++) {
         const p = (this.$refs[`p${j}`] as any).$el as HTMLElement;
-        console.log(p, j);
         if (j === i) p.style.transform = 'scale(1)';
         else p.style.transform = 'scale(0)';
       }

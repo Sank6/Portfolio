@@ -25,7 +25,7 @@
         <Box ref="box" :width="0.5" :height="0.5" :depth="1000">
           <BasicMaterial color="#3e3e3e" :props="{ transparent: true, opacity: 0 }" />
         </Box>
-        <Sphere :radius="2" v-for="i in projects.length" v-bind:key="i" :ref="`dot-${i}`" @click="click(i)" @pointerEnter="enter(i)" @pointerLeave="leave(i)">
+        <Sphere :radius="2" :width-segments="50" v-for="i in projects.length" v-bind:key="i" :ref="`dot-${i}`" @click="click(i)" @pointerEnter="enter(i)" @pointerLeave="leave(i)">
           <BasicMaterial color="#fbc31c" :props="{ transparent: true, opacity: 0 }" />
         </Sphere>
         <GltfModel src="/klein_bottle.gltf" @load="onload" />
@@ -122,7 +122,8 @@ export default defineComponent({
       pointer: new Vector2(0, 0),
       raycaster: new Raycaster(),
       firstDraw: 0,
-      userScroll: true
+      userScroll: true,
+      selected: -1,
     };
   },
   mounted() {
@@ -138,6 +139,7 @@ export default defineComponent({
     for (let i = 1; i <= this.projects.length; i++) {
       if (this.$refs[`dot-${i}`]) this.dots.push(this.$refs[`dot-${i}`] as typeof Sphere);
     }
+    this.click(this.dots.length);
 
     this.camera.camera.lookAt(new Vector3(60, 120, 20));
     this.cameraRotation.start.copy(this.camera.camera.rotation);
@@ -335,23 +337,19 @@ export default defineComponent({
       }
     },
     enter(i: number) {
-      if (this.scrollFrac - 1 < 0.1) {
-        this.dots[i-1].mesh.scale.set(1.5, 1.5, 1.5);
-        document.body.style.cursor = "pointer";
-      }
+      this.dots[i-1].mesh.scale.set(1.75,1.75, 1.75);
+      document.body.style.cursor = "pointer";
     },
     leave(i: number) {
-      this.dots[i-1].mesh.scale.set(1, 1, 1);
       document.body.style.cursor = "auto";
+      this.dots[i-1].mesh.scale.set(1, 1, 1);
     },
     click(i: number) {
       for (let j = 0; j < this.dots.length; j++) {
         if (j !== i - 1) {
           this.dots[j].mesh.material.color.set(0xfbc31c);
-          this.dots[j].mesh.scale.set(1, 1, 1);
         } else {
           this.dots[j].mesh.material.color.set(0xff0000);
-          this.dots[j].mesh.scale.set(1.5, 1.5, 1.5);
         }
       }
       this.$emit('select', i - 1);

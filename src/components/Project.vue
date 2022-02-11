@@ -54,6 +54,7 @@ export default defineComponent({
 <style scoped>
 .project {
     position: absolute;
+    display: block;
     left: 0;
     margin: 7%;
     background: #1a1a1a;
@@ -64,10 +65,16 @@ export default defineComponent({
     text-decoration: none;
     transition: 300ms ease all;
     transform: scale(0);
+    width: 85%;
 }
 
 .project:hover {
     transform: scale(1.05) !important;
+}
+
+h2 {
+    font-size: 1.5em;
+    margin: 0;
 }
 
 .right {
@@ -82,15 +89,19 @@ export default defineComponent({
 }
 
 .description {
-    font-size: 1.3em;
+    font-size: 1.1em;
+    line-height: 1.2em;
 }
 
 img {
     width: 50%;
-
+    filter: opacity(0.5);
+    max-height: 40vh;
+    object-fit: cover;
+    transition: 400ms ease all;
 }
 
-a {
-    display: block;
+.project:hover > img {
+    filter: opacity(1)
 }
 </style>
