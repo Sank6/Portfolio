@@ -155,7 +155,7 @@ export default defineComponent({
       for (let p of this.projects) dates.push(new Date(p.date));
       dates = dates.sort((a, b) => a.getTime() - b.getTime())
       let startYear = (new Date(String(dates[0].getFullYear()))).getTime();
-      let endYear = (new Date(String(new Date().getFullYear()))).getTime();
+      let endYear = (new Date(String(new Date().getFullYear() + 1))).getTime();
       this.projectDots = [];
       for (let i in this.projects) {
         let p = this.projects[i];
@@ -180,7 +180,7 @@ export default defineComponent({
           y *= intensifier;
           let startpos = new Vector3(x0 + x * this.n * 3, y, x0 + z * this.n * 3);
           let endpos = this.projectDots.sort((a, b) => a.distanceTo(startpos) - b.distanceTo(startpos))[0]
-          let lerped = startpos.lerp(endpos, this.scrollFrac);
+          let lerped = startpos.lerp(endpos, Math.min(this.scrollFrac, 1));
           dummy.position.copy(lerped);
           dummy.updateMatrix();
           this.spheres?.setMatrixAt(this.n * x + z, dummy.matrix);
@@ -270,21 +270,30 @@ export default defineComponent({
       });
     },
     onScroll() {
-      if (this.scrollY < window.scrollY)
+      this.scrollFrac = window.scrollY / window.innerHeight;
+      let el: HTMLElement = document.getElementById('projects') as HTMLElement;
+      if (this.scrollY < window.scrollY) {
         this.lineRotation = (this.lineRotation + 0.05) % (2 * Math.PI);
-      else if (this.scrollY > window.scrollY)
+        if (this.scrollFrac > 0.7 && 1 > this.scrollFrac) el.scrollIntoView();
+      } else if (this.scrollY > window.scrollY) {
         this.lineRotation = (this.lineRotation - 0.1) % (2 * Math.PI);
+        if (this.scrollFrac < 1.3 && this.scrollFrac > 1) el.scrollIntoView();
+      }
       this.scrollY = window.scrollY;
-      this.scrollFrac = Math.min(window.scrollY / window.innerHeight, 1);
       this.updateScroll();
     },
     updateScroll() {
+      let c2 = Math.max(0, this.scrollFrac - 1);
+      if (this.renderer) this.renderer.renderer.domElement.style.filter = `blur(${c2 * 7.5}px)`;
+      if (this.scrollFrac >= 1) this.scrollFrac = 2 - this.scrollFrac;
+
+      let clamped = Math.min(1, this.scrollFrac);
       if (this.line) this.line.material.opacity = 1 - this.scrollFrac * 2;
       if (this.tubesY) this.tubesY.material.opacity = 1 - this.scrollFrac;
       if (this.tubesZ) this.tubesZ.material.opacity = 1 - this.scrollFrac;
       if (this.camera) {
         let lookAt = new Vector3(0, 0, 0);
-        lookAt.lerpVectors(this.cameraRotation.start, this.cameraRotation.end, this.scrollFrac);
+        lookAt.lerpVectors(this.cameraRotation.start, this.cameraRotation.end, clamped);
         this.camera.camera.rotation.copy(new Euler().setFromVector3(lookAt));
         this.camera.camera.updateProjectionMatrix();
       }
@@ -292,19 +301,22 @@ export default defineComponent({
       else this.hideTubes = false;
 
       for (let d of this.dots) {
-        d.mesh.material.opacity = (this.scrollFrac - 0.875) * 8;
-        d.mesh.scale.set((this.scrollFrac - 0.5) * 2, (this.scrollFrac - 0.5) * 2, (this.scrollFrac - 0.5) * 2);
+        d.mesh.material.opacity = (clamped - 0.875) * 8;
+        d.mesh.scale.set((clamped - 0.5) * 2, (clamped - 0.5) * 2, (clamped - 0.5) * 2);
       }
 
-      if (this.scrollFrac == 1) this.spheres.visible = false;
+      if (this.scrollFrac > 0.99) this.spheres.visible = false;
       else this.spheres.visible = true;
 
       if (this.box) {
-        this.box.mesh.material.opacity = (this.scrollFrac - 0.5) * 2;
-        this.box.mesh.scale.set((this.scrollFrac - 0.5) * 2, (this.scrollFrac - 0.5) * 2, (this.scrollFrac - 0.5) * 2);
+        this.box.mesh.material.opacity = (clamped - 0.5) * 2;
+        this.box.mesh.scale.set((clamped - 0.5) * 2, (clamped - 0.5) * 2, (clamped - 0.5) * 2);
       }
 
       if (window.innerWidth < 600) this.camera.camera.fov = 50 + 50 * this.scrollFrac;
+
+      let p = document.querySelector("#projects") as HTMLElement
+      p.style.opacity = String((this.scrollFrac - 0.5) * 2);
     },
     onResize() {
       if (this.line) {
@@ -318,7 +330,7 @@ export default defineComponent({
 				this.pointer.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
     },
     enter(i: number) {
-      if (this.scrollFrac == 1) {
+      if (this.scrollFrac - 1 < 0.1) {
         this.dots[i - 1].mesh.material.color.set(0xff0000);
         this.dots[i-1].mesh.scale.set(1.5, 1.5, 1.5);
         document.body.style.cursor = "pointer";

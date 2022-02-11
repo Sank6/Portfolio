@@ -3,7 +3,7 @@
   <div id="main">
     <nav-bar />
     <div class="content">
-      <div class="content-container">
+      <div class="main-container">
         <h1 id="name">Sankarsh Makam</h1>
         <h2>🏢 Student at University of Bristol</h2>
       </div>
@@ -11,6 +11,11 @@
     <div id="projects" class="content">
       <div class="content-container">
         <h1>Projects</h1>
+      </div>
+    </div>
+    <div id="contact" class="content">
+      <div class="content-container">
+        <h1>Contact</h1>
       </div>
     </div>
   </div>
@@ -99,11 +104,11 @@ p {
   height: 100vh;
 }
 
-.content .content-container {
+.main-container {
   padding: 7%;
 }
 
-#projects .content-container {
+.content-container {
   padding: 2% 7%;
 }
 
