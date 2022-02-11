@@ -175,9 +175,14 @@ img {
         margin-top: 50px;
     }
 
+    h2 {
+        margin-top: 20px;
+    }
+
     img {
         width: 100%;
         max-height: 20vh;
+        filter: opacity(1);
     }
 
     .right {
