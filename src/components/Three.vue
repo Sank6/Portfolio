@@ -122,6 +122,7 @@ export default defineComponent({
       pointer: new Vector2(0, 0),
       raycaster: new Raycaster(),
       firstDraw: 0,
+      userScroll: true
     };
   },
   mounted() {
@@ -146,7 +147,7 @@ export default defineComponent({
     this.renderer.onBeforeRender(this.animate);
     window.addEventListener('scroll', this.onScroll);
     window.addEventListener('resize', this.onResize);
-    window.addEventListener( 'mousemove', this.onMove );
+    window.addEventListener('click', this.onClick);
   },
   methods: {
     calculate() {
@@ -274,10 +275,10 @@ export default defineComponent({
       let el: HTMLElement = document.getElementById('projects') as HTMLElement;
       if (this.scrollY < window.scrollY) {
         this.lineRotation = (this.lineRotation + 0.05) % (2 * Math.PI);
-        if (this.scrollFrac > 0.7 && 1 > this.scrollFrac) el.scrollIntoView();
+        if (this.scrollFrac > 0.7 && 1 > this.scrollFrac && this.userScroll) el.scrollIntoView();
       } else if (this.scrollY > window.scrollY) {
         this.lineRotation = (this.lineRotation - 0.1) % (2 * Math.PI);
-        if (this.scrollFrac < 1.3 && this.scrollFrac > 1) el.scrollIntoView();
+        if (this.scrollFrac < 1.3 && this.scrollFrac > 1 && this.userScroll) el.scrollIntoView();
       }
       this.scrollY = window.scrollY;
       this.updateScroll();
@@ -325,9 +326,11 @@ export default defineComponent({
         else this.line.position.set(120, 100, 20);
       }
     },
-    onMove(e: MouseEvent) {
-				this.pointer.x = ( e.clientX / window.innerWidth ) * 2 - 1;
-				this.pointer.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
+    onClick(e: MouseEvent) {
+      if ((e.target as HTMLElement).tagName.toLowerCase() === "a") this.userScroll = false;
+      setTimeout(() => {
+        this.userScroll = true;
+      }, 200);
     },
     enter(i: number) {
       if (this.scrollFrac - 1 < 0.1) {

@@ -3,7 +3,7 @@
     <div class="container">
         <a href="#projects">Projects</a>
         <a href="#">Resume</a>
-        <a href="#">Contact</a>
+        <a href="#contact">Contact</a>
     </div>
   </div>
 </template>
@@ -20,6 +20,7 @@ export default defineComponent({
   position: fixed;
   width: 100%;
   pointer-events: all;
+  z-index: 10;
 }
 
 .container {
