@@ -10,9 +10,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-export default defineComponent({
-  components: {},
-});
+export default defineComponent({});
 </script>
 
 <style scoped>
@@ -39,5 +37,25 @@ a {
 
 a:hover {
     border-color: white;
+}
+
+a:focus {
+  outline: solid aquamarine;
+  border-radius: 5px;
+}
+
+/* mobile */
+
+@media only screen and (max-width: 600px) {
+  #navbar {
+    background: #1f1f1f;
+  }
+
+  .container {
+    float: none;
+    margin: 20px 0;
+    text-align: center;
+    box-shadow: 0 0 5px #1f1f1f;
+  }
 }
 </style>

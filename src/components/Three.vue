@@ -136,24 +136,29 @@ export default defineComponent({
     this.camera = this.$refs.camera as typeof Camera.camera;
     this.box = this.$refs.box as typeof Box;
 
+    this.renderer.onBeforeRender(this.animate);
+
     for (let i = 1; i <= this.projects.length; i++) {
       if (this.$refs[`dot-${i}`]) this.dots.push(this.$refs[`dot-${i}`] as typeof Sphere);
     }
     this.click(this.dots.length);
-
+    
     this.camera.camera.lookAt(new Vector3(60, 120, 20));
     this.cameraRotation.start.copy(this.camera.camera.rotation);
     this.scrollFrac = 1;
     this.updateScroll();
     
-    this.renderer.onBeforeRender(this.animate);
-    window.addEventListener('scroll', this.onScroll);
-    window.addEventListener('resize', this.onResize);
-    window.addEventListener('click', this.onClick);
+    
+    if (window.innerWidth > 600) {
+      window.addEventListener('scroll', this.onScroll);
+      window.addEventListener('resize', this.onResize);
+      window.addEventListener('click', this.onClick);
+    } else {
+      window.addEventListener('scroll', this.onScrollMobile);
+    }
   },
   methods: {
     calculate() {
-      if (this.firstDraw <= 1) return; 
       let dates = []
       for (let p of this.projects) dates.push(new Date(p.date));
       dates = dates.sort((a, b) => a.getTime() - b.getTime())
@@ -169,6 +174,7 @@ export default defineComponent({
       this.box?.mesh.position.set(-50, 0, -20);
       this.box?.mesh.lookAt(this.projectDots[this.projectDots.length - 1]);
       this.onScroll();
+      this.scrollFrac = 0;
     },
     animate() {
       if (!this.spheres) return;
@@ -287,7 +293,7 @@ export default defineComponent({
     },
     updateScroll() {
       let c2 = Math.max(0, this.scrollFrac - 1);
-      if (this.renderer) this.renderer.renderer.domElement.style.filter = `blur(${c2 * 7.5}px)`;
+      if (this.renderer) this.renderer.renderer.domElement.style.filter = `blur(${c2 * 15}px)`;
       if (this.scrollFrac >= 1) this.scrollFrac = 2 - this.scrollFrac;
 
       let clamped = Math.min(1, this.scrollFrac);
@@ -316,10 +322,11 @@ export default defineComponent({
         this.box.mesh.scale.set((clamped - 0.5) * 2, (clamped - 0.5) * 2, (clamped - 0.5) * 2);
       }
 
-      if (window.innerWidth < 600) this.camera.camera.fov = 50 + 50 * this.scrollFrac;
-
       let p = document.querySelector("#projects") as HTMLElement
       p.style.opacity = String((this.scrollFrac - 0.5) * 2);
+    },
+    onScrollMobile() {
+      if (this.renderer) this.renderer.renderer.domElement.style.filter = `blur(${Math.min(window.scrollY / window.innerHeight, 1) * 15}px)`;
     },
     onResize() {
       if (this.line) {

@@ -4,24 +4,29 @@
         <div class="right">
             <h2>{{ title }}</h2>
             <p class="date">{{(new Date(date)).toLocaleDateString(undefined, {month: "long", year: "numeric"})}}</p>
+            <div id="technologies">
+                <span class="icon" v-for="t in technologies" :key="t">
+                    <oh-vue-icon :alt="t" :name="`si-${t.toLowerCase().replace('.', 'dot')}`" />
+                    <span class="text">{{ t }}</span>
+                </span>
+            </div>
             <p class="description">{{ description }}</p>
         </div>
     </a>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-
-interface Project {
-  title: string;
-  image: string;
-  date: number;
-  link: string;
-  description: string;
-  technologies: string[];
-}
+import { defineComponent } from 'vue';
+import { OhVueIcon, addIcons } from "oh-vue-icons";
+import * as SiIcons from 'oh-vue-icons/icons/si';
 
 export default defineComponent({
+    components: {
+        OhVueIcon,
+    },
+    beforeMount() {
+        addIcons(...Object.values({ ...SiIcons }) as any);
+    },
     props: {
         title: {
             type: String,
@@ -65,11 +70,11 @@ export default defineComponent({
     text-decoration: none;
     transition: 300ms ease all;
     transform: scale(0);
-    width: 85%;
+    width: calc(85% - 40px);
 }
 
-.project:hover {
-    transform: scale(1.05) !important;
+.project:hover, .project:focus {
+    transform: scale(1.02) !important;
 }
 
 h2 {
@@ -103,5 +108,82 @@ img {
 
 .project:hover > img {
     filter: opacity(1)
+}
+
+#technologies {
+    margin-top: 30px;
+}
+
+.icon svg {
+    width: 30px;
+    height: 30px;
+    margin: 5px 0;
+    opacity: 0.3;
+    color: #fff;
+    transition: 400ms ease all;
+}
+
+.icon:hover svg {
+    opacity: 1;
+    color: #fbc31c
+}
+
+/* Tooltips */
+
+.icon {
+    position: relative;
+}
+
+.text {
+  visibility: hidden;
+  opacity: 0;
+  background-color: #ebebeb;
+  color: #1f1f1f;
+  text-align: center;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  bottom: 220%;
+  width: 65px;
+  left: 0;
+  transform: translate(-17px, 0);
+  font-size: 0.8rem;
+  transition: 400ms ease all;
+}
+
+.text::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #ebebeb transparent transparent transparent;
+}
+
+.icon:hover .text {
+    visibility: visible;
+    opacity: 1;
+}
+
+@media only screen and (max-width: 600px) {
+    .project {
+        position: static;
+        opacity: 1;
+        transform: scale(1);
+        margin-top: 50px;
+    }
+
+    img {
+        width: 100%;
+        max-height: 20vh;
+    }
+
+    .right {
+        float: none;
+        width: 100%;
+        padding: 0;
+    }
 }
 </style>

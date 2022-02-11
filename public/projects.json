@@ -52,7 +52,7 @@
         "description": "An automatically generated, ever expanding collection of bots on Reddit. Uses a points-based algorithm to determine whether a user is a bot. Built on Nuxt with a Typescript Express server.",
         "technologies": [
             "Typescript",
-            "Nuxt",
+            "Nuxt.js",
             "Express",
             "Bulma"
         ]
@@ -64,8 +64,7 @@
         "link": "https://github.com/Sank6/Journal-App/",
         "description": "A self-hosted PWA for journaling using the Phoenix frameowrk.",
         "technologies": [
-            "Elixir",
-            "Phoenix"
+            "Elixir"
         ]
     },
     {
@@ -85,7 +84,7 @@
         "image": "https://raw.githubusercontent.com/Sank6/Dijkstras-3D/main/demo.gif?token=AF627YOTWOLHNFBWUCYBEHDBSR6R2",
         "date": 1630105200000,
         "link": "https://dijkstra-threejs.netlify.app/",
-        "description": "A web animation to visualise Dijsktra's algorithm in 3D. Simulates a graph by having a radius around each point that connect them to other points.",
+        "description": "A web animation to visualise Dijkstra's algorithm in 3D. Simulates a graph by having a radius around each point that connect them to other points.",
         "technologies": [
             "Vue.js",
             "Vite",

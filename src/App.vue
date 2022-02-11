@@ -1,8 +1,8 @@
 <template>
-  <three class="three" :projects="data" @select="select" />
+  <three class="three" ref="three" :projects="data" @select="select" />
   <div id="main">
     <nav-bar />
-    <div class="content">
+    <div id="me" class="content">
       <div class="main-container">
         <h1 id="name">Sankarsh Makam</h1>
         <h2>🏢 Student at University of Bristol</h2>
@@ -11,12 +11,17 @@
     <div id="projects" class="content">
       <div class="content-container">
         <h1>Projects</h1>
-        <Project v-for="(project, i) in data" :key="i" :="project" :ref="`p${i}`" />
+        <Project v-for="(project, i) in data" :key="i" :="project" :ref="`p${i}`" @focus="focus(i)" />
       </div>
     </div>
     <div id="contact" class="content">
       <div class="content-container">
         <h1>Contact</h1>
+        <div id="links-container">
+          <a class="icon" v-for="{name, link} in contact" :key="name" :href="link" @focus="contactFocus">
+            <oh-vue-icon :name="name" animation="pulse" speed="slow" hover />
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -29,6 +34,9 @@ import NavBar from './components/NavBar.vue';
 import Project from './components/Project.vue';
 
 import data from '../public/projects.json';
+
+import { OhVueIcon, addIcons } from "oh-vue-icons";
+import { SiGithub, SiLinkedin, SiKeybase, OiMail } from 'oh-vue-icons/icons';
 
 interface Project {
   title: string;
@@ -44,18 +52,53 @@ export default defineComponent({
     Three,
     NavBar,
     Project,
+    OhVueIcon,
   },
   data() {
-    return { data: data as Project[] };
+    return { 
+      data: data as Project[],
+      contact: [
+        {
+          name: "si-github",
+          link: "https://github.com/Sank6",
+        },
+        {
+          name: "si-keybase",
+          link: "https://keybase.io/Sank6",
+        },
+        {
+          name: "si-linkedin",
+          link: "https://www.linkedin.com/in/sankarshm",
+        },
+        {
+          name: "oi-mail",
+          link: "mailto:sankarshm@yahoo.com",
+        }
+      ]
+    };
+  },
+  beforeMount() {
+    addIcons(...Object.values({ SiGithub, SiLinkedin, SiKeybase, OiMail }) as any);
   },
   methods: {
     select(i: number) {
+      if (window.innerWidth < 600) return;
       for (let j = 0; j < this.data.length; j++) {
         const p = (this.$refs[`p${j}`] as any).$el as HTMLElement;
         if (j === i) p.style.transform = 'scale(1)';
         else p.style.transform = 'scale(0)';
       }
     },
+    focus(i: number) {
+      if (window.innerWidth < 600) return;
+      this.select(i);
+      (this.$refs.three as any).click(i+1);
+      document.querySelector("#projects")?.scrollIntoView();
+    },
+    contactFocus() {
+      if (window.innerWidth < 600) return;
+      document.querySelector("#contact")?.scrollIntoView();
+    }
   }
 });
 </script>
@@ -101,6 +144,11 @@ p {
   pointer-events: all;
 }
 
+a:focus {
+  outline: solid aquamarine;
+  border-radius: 5px;
+}
+
 #main {
   z-index: 10;
   position: absolute;
@@ -108,6 +156,10 @@ p {
   top: 0;
   left: 0;
   pointer-events: none;
+}
+
+#me, #contact {
+  height: 100vh;
 }
 
 .content {
@@ -128,16 +180,73 @@ p {
   gap: 20px;
 }
 
+#links-container {
+  pointer-events: all;
+  display: flex;
+  height: 50vh;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon {
+  padding: 5px;
+  margin: 10px;
+  width: 70px;
+}
+
+.icon svg {
+  color: #3e3e3e;
+  width: 70px;
+  height: 70px;
+  filter: drop-shadow(0px 0px 2px #3e3e3e);
+  transition: 400ms ease all;
+}
+
+.icon:hover svg {
+  color: white;
+  filter: drop-shadow(0px 0px 2px white);
+}
+
 /* mobile */
 @media only screen and (max-width: 600px) {
   h1 {
     padding: 50px 3%;
   }
+
+  .main-container {
+    padding: 2%;
+  }
+
   .content .content-container {
     padding: 3%;
   }
+
+  #projects {
+    opacity: 1 !important;
+  }
+
   #projects .content-container {
     padding: 2% 3%;
+  }
+
+  .icon {
+    display: block;
+  }
+
+  .icon svg {
+    color: white;
+    filter: drop-shadow(0px 0px 2px white);
+  }
+
+  .content {
+    height: auto;
+  }
+
+  #links-container {
+    display: block !important;
+    margin: 0 auto;
+    width: 100px;
+    text-align: center;
   }
 }
 </style>
