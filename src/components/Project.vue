@@ -1,10 +1,10 @@
 <template>
     <a class="project" :href="link" target="_blank">
-        <img :src="image" :alt="`Demo for ${title}`" />
+        <img :src="image" :alt="`Demo for ${title}`" loading="lazy" />
         <div class="right">
             <h2>{{ title }}</h2>
             <p class="date">{{(new Date(date)).toLocaleDateString(undefined, {month: "long", year: "numeric"})}}</p>
-            <div id="technologies">
+            <div class="technologies">
                 <span class="icon" v-for="t in technologies" :key="t">
                     <oh-vue-icon :alt="t" :name="`si-${t.toLowerCase().replace('.', 'dot')}`" />
                     <span class="text">{{ t }}</span>
@@ -110,7 +110,7 @@ img {
     filter: opacity(1)
 }
 
-#technologies {
+.technologies {
     margin-top: 30px;
 }
 

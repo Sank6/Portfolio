@@ -19,7 +19,7 @@
         <h1>Contact</h1>
         <div id="links-container">
           <a class="icon" v-for="{name, link} in contact" :key="name" :href="link" @focus="contactFocus">
-            <oh-vue-icon :name="name" animation="pulse" speed="slow" hover />
+            <oh-vue-icon :name="name" />
           </a>
         </div>
       </div>
@@ -145,7 +145,7 @@ p {
 }
 
 a:focus {
-  outline: solid aquamarine;
+  outline: solid #6f00ff;
   border-radius: 5px;
 }
 
@@ -195,16 +195,16 @@ a:focus {
 }
 
 .icon svg {
-  color: #3e3e3e;
+  color: #ffffff;
   width: 70px;
   height: 70px;
-  filter: drop-shadow(0px 0px 2px #3e3e3e);
+  filter: drop-shadow(0px 0px 2px #ffffff);
+  transform: translateY(0px);
   transition: 400ms ease all;
 }
 
 .icon:hover svg {
-  color: white;
-  filter: drop-shadow(0px 0px 2px white);
+  transform: translateY(-10px);
 }
 
 /* mobile */

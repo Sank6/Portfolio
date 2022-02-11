@@ -40,7 +40,7 @@ a:hover {
 }
 
 a:focus {
-  outline: solid aquamarine;
+  outline: solid #6f00ff;
   border-radius: 5px;
 }
 

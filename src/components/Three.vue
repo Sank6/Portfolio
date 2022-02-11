@@ -131,7 +131,7 @@ export default defineComponent({
     this.tubesZ = (this.$refs.tubesZ as typeof InstancedMesh).mesh;
     this.tubesY = (this.$refs.tubesY as typeof InstancedMesh).mesh;
     this.renderer = this.$refs.renderer as RendererPublicInterface;
-    this.renderer.renderer.setClearColor(new Color(0x050505));
+    this.renderer.renderer.setClearColor(new Color(0x1f1f1f));
     this.scene = this.$refs.scene as typeof Scene.scene;
     this.camera = this.$refs.camera as typeof Camera.camera;
     this.box = this.$refs.box as typeof Box;
@@ -280,13 +280,17 @@ export default defineComponent({
     },
     onScroll() {
       this.scrollFrac = window.scrollY / window.innerHeight;
-      let el: HTMLElement = document.getElementById('projects') as HTMLElement;
+      if (((this.scrollFrac < 1 && this.scrollFrac > 0.7 && this.scrollY < window.scrollY) || (this.scrollFrac > 1 && this.scrollFrac < 1.3 && this.scrollY > window.scrollY)) && this.userScroll) {
+        window.scrollTo(0,window.innerHeight);
+        this.userScroll = false;
+        setTimeout(() => {
+          this.userScroll = true;
+        }, 200);
+      }
       if (this.scrollY < window.scrollY) {
         this.lineRotation = (this.lineRotation + 0.05) % (2 * Math.PI);
-        if (this.scrollFrac > 0.7 && 1 > this.scrollFrac && this.userScroll) el.scrollIntoView();
       } else if (this.scrollY > window.scrollY) {
         this.lineRotation = (this.lineRotation - 0.1) % (2 * Math.PI);
-        if (this.scrollFrac < 1.3 && this.scrollFrac > 1 && this.userScroll) el.scrollIntoView();
       }
       this.scrollY = window.scrollY;
       this.updateScroll();
@@ -356,7 +360,7 @@ export default defineComponent({
         if (j !== i - 1) {
           this.dots[j].mesh.material.color.set(0xfbc31c);
         } else {
-          this.dots[j].mesh.material.color.set(0xff0000);
+          this.dots[j].mesh.material.color.set(0x6f00ff);
         }
       }
       this.$emit('select', i - 1);
