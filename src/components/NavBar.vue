@@ -2,7 +2,7 @@
   <div id="navbar">
     <div class="container">
         <a href="#projects">Projects</a>
-        <a href="#">Resume</a>
+        <a href="/resume.pdf" download="Resume.pdf">Resume</a>
         <a href="#contact">Contact</a>
     </div>
   </div>
