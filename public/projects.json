@@ -33,5 +33,63 @@
             "Node.js",
             "Electron"
         ]
+    },
+    {
+        "title": "Monopoly",
+        "image": "https://raw.githubusercontent.com/Sank6/Monopoly/master/images/screenshot.png",
+        "date": 1599778800000,
+        "link": "https://github.com/Sank6/Monopoly/",
+        "description": "A Python program to simulate Monopoly games in the command line to try to reach an ideal game by analysing results.",
+        "technologies": [
+            "Python"
+        ]
+    },
+    {
+        "title": "Reddit Bots",
+        "image": "https://i.postimg.cc/fLJXt3Gx/image.png",
+        "date": 1609286400000,
+        "link": "https://github.com/Sank6/Reddit-Bots-Server/",
+        "description": "An automatically generated, ever expanding collection of bots on Reddit. Uses a points-based algorithm to determine whether a user is a bot. Built on Nuxt with a Typescript Express server.",
+        "technologies": [
+            "Typescript",
+            "Nuxt",
+            "Express",
+            "Bulma"
+        ]
+    },
+    {
+        "title": "Journal App",
+        "image": "https://i.postimg.cc/xCtvLC2r/Screen-Shot-2021-02-23-at-15-31-36.png",
+        "date": 1612828800000,
+        "link": "https://github.com/Sank6/Journal-App/",
+        "description": "A self-hosted PWA for journaling using the Phoenix frameowrk.",
+        "technologies": [
+            "Elixir",
+            "Phoenix"
+        ]
+    },
+    {
+        "title": "Cellular Automaton",
+        "image": "https://i.postimg.cc/Y0v6W6SQ/image.png",
+        "date": 1623020400000,
+        "link": "https://conways-game-3d.netlify.app/",
+        "description": "A 3D cellular automaton game based on Conway's game of life",
+        "technologies": [
+            "Vue.js",
+            "Vite",
+            "Three.js"
+        ]
+    },
+    {
+        "title": "Dijkstra's Algorithm",
+        "image": "https://raw.githubusercontent.com/Sank6/Dijkstras-3D/main/demo.gif?token=AF627YOTWOLHNFBWUCYBEHDBSR6R2",
+        "date": 1630105200000,
+        "link": "https://dijkstra-threejs.netlify.app/",
+        "description": "A web animation to visualise Dijsktra's algorithm in 3D. Simulates a graph by having a radius around each point that connect them to other points.",
+        "technologies": [
+            "Vue.js",
+            "Vite",
+            "Three.js"
+        ]
     }
 ]
