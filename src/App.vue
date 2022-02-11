@@ -1,5 +1,5 @@
 <template>
-  <three class="three" :projects="data" />
+  <three class="three" :projects="data" @select="select" />
   <div id="main">
     <nav-bar />
     <div class="content">
@@ -11,6 +11,7 @@
     <div id="projects" class="content">
       <div class="content-container">
         <h1>Projects</h1>
+        <Project v-for="(project, i) in data" :key="i" :="project" :ref="`p${i}`" />
       </div>
     </div>
     <div id="contact" class="content">
@@ -25,6 +26,7 @@
 import { defineComponent } from 'vue';
 import Three from './components/Three.vue';
 import NavBar from './components/NavBar.vue';
+import Project from './components/Project.vue';
 
 import data from '../public/projects.json';
 
@@ -41,12 +43,21 @@ export default defineComponent({
   components: {
     Three,
     NavBar,
+    Project,
   },
   data() {
-    return {
-      data: data as Project[],
-    };
+    return { data: data as Project[] };
   },
+  methods: {
+    select(i: number) {
+      for (let j = 0; j < this.data.length; j++) {
+        const p = (this.$refs[`p${j}`] as any).$el as HTMLElement;
+        console.log(p, j);
+        if (j === i) p.style.transform = 'scale(1)';
+        else p.style.transform = 'scale(0)';
+      }
+    },
+  }
 });
 </script>
 

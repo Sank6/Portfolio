@@ -25,7 +25,7 @@
         <Box ref="box" :width="0.5" :height="0.5" :depth="1000">
           <BasicMaterial color="#3e3e3e" :props="{ transparent: true, opacity: 0 }" />
         </Box>
-        <Sphere :radius="2" v-for="i in projects.length" v-bind:key="i" :ref="`dot-${i}`" @pointerEnter="enter(i)" @pointerLeave="leave(i)">
+        <Sphere :radius="2" v-for="i in projects.length" v-bind:key="i" :ref="`dot-${i}`" @click="click(i)" @pointerEnter="enter(i)" @pointerLeave="leave(i)">
           <BasicMaterial color="#fbc31c" :props="{ transparent: true, opacity: 0 }" />
         </Sphere>
         <GltfModel src="/klein_bottle.gltf" @load="onload" />
@@ -327,22 +327,34 @@ export default defineComponent({
       }
     },
     onClick(e: MouseEvent) {
-      if ((e.target as HTMLElement).tagName.toLowerCase() === "a") this.userScroll = false;
-      setTimeout(() => {
-        this.userScroll = true;
-      }, 200);
+      if ((e.target as HTMLElement).tagName.toLowerCase() === "a") {
+        this.userScroll = false;
+        setTimeout(() => {
+          this.userScroll = true;
+        }, 200);
+      }
     },
     enter(i: number) {
       if (this.scrollFrac - 1 < 0.1) {
-        this.dots[i - 1].mesh.material.color.set(0xff0000);
         this.dots[i-1].mesh.scale.set(1.5, 1.5, 1.5);
         document.body.style.cursor = "pointer";
       }
     },
     leave(i: number) {
-      this.dots[i - 1].mesh.material.color.set(0xfbc31c);
       this.dots[i-1].mesh.scale.set(1, 1, 1);
       document.body.style.cursor = "auto";
+    },
+    click(i: number) {
+      for (let j = 0; j < this.dots.length; j++) {
+        if (j !== i - 1) {
+          this.dots[j].mesh.material.color.set(0xfbc31c);
+          this.dots[j].mesh.scale.set(1, 1, 1);
+        } else {
+          this.dots[j].mesh.material.color.set(0xff0000);
+          this.dots[j].mesh.scale.set(1.5, 1.5, 1.5);
+        }
+      }
+      this.$emit('select', i - 1);
     }
   },
 });
