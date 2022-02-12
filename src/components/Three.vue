@@ -279,17 +279,23 @@ export default defineComponent({
       });
     },
     onScroll() {
+      let scrollDirection = this.scrollY - window.scrollY < 0 ? "down" : "up";
+      let oldFrac = this.scrollFrac;
       this.scrollFrac = window.scrollY / window.innerHeight;
-      if (((this.scrollFrac < 1 && this.scrollFrac > 0.7 && 1 > this.scrollY) || (this.scrollFrac > 1 && this.scrollFrac < 1.3 && this.scrollY > 1.05)) && this.userScroll) {
+      if ((
+        (this.scrollFrac < 1 && this.scrollFrac > 0.7 && (scrollDirection === "down" || oldFrac > 1)) || // if scroll down or scroll up but overshoot
+        (this.scrollFrac > 1 && this.scrollFrac < 1.3 && (scrollDirection === "up" || oldFrac < 1))) 
+        && this.userScroll
+        ) {
         window.scrollTo(0,window.innerHeight);
         this.userScroll = false;
         setTimeout(() => {
           this.userScroll = true;
         }, 200);
       }
-      if (this.scrollY < window.scrollY) {
+      if (scrollDirection === "down") {
         this.lineRotation = (this.lineRotation + 0.05) % (2 * Math.PI);
-      } else if (this.scrollY > window.scrollY) {
+      } else if (scrollDirection === "up") {
         this.lineRotation = (this.lineRotation - 0.1) % (2 * Math.PI);
       }
       this.scrollY = window.scrollY;
@@ -356,6 +362,10 @@ export default defineComponent({
       this.dots[i-1].mesh.scale.set(1, 1, 1);
     },
     click(i: number) {
+      this.userScroll = false;
+      setTimeout(() => {
+        this.userScroll = true;
+      }, 200);
       for (let j = 0; j < this.dots.length; j++) {
         if (j !== i - 1) {
           this.dots[j].mesh.material.color.set(0xfbc31c);
