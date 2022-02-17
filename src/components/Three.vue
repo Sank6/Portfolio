@@ -291,7 +291,7 @@ export default defineComponent({
         this.userScroll = false;
         setTimeout(() => {
           this.userScroll = true;
-        }, 200);
+        }, 1000);
       }
       if (scrollDirection === "down") {
         this.lineRotation = (this.lineRotation + 0.05) % (2 * Math.PI);
