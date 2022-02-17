@@ -213,6 +213,12 @@ a:focus {
   padding: 5px;
   margin: 10px;
   width: 70px;
+  transform: translateY(0px);
+  transition: 400ms ease all;
+}
+
+.icon:hover {
+  transform: translateY(-10px);
 }
 
 .icon svg {
@@ -220,12 +226,10 @@ a:focus {
   width: 70px;
   height: 70px;
   filter: drop-shadow(0px 0px 2px #ffffff);
-  transform: translateY(0px);
   transition: 400ms ease all;
 }
 
 .icon:hover svg {
-  transform: translateY(-10px);
   color: #fbc31c;
   filter: drop-shadow(0px 0px 2px #fbc31c);
 }
