@@ -101,7 +101,7 @@ h2 {
 img {
     width: 50%;
     filter: opacity(0.5);
-    max-height: 40vh;
+    height: 40vh;
     object-fit: cover;
     transition: 400ms ease all;
 }

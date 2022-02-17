@@ -12,6 +12,12 @@
       <div class="content-container">
         <h1>Projects</h1>
         <Project v-for="(project, i) in data" :key="i" :="project" :ref="`p${i}`" @focus="focus(i)" />
+        <div class="navigate-btn left">
+          <oh-vue-icon name="oi-chevron-left" @click="prev" />
+        </div>
+        <div class="navigate-btn right">
+          <oh-vue-icon name="oi-chevron-right" @click="next" />
+        </div>
       </div>
     </div>
     <div id="contact" class="content">
@@ -36,7 +42,7 @@ import Project from './components/Project.vue';
 import data from '../public/projects.json';
 
 import { OhVueIcon, addIcons } from "oh-vue-icons";
-import { SiGithub, SiLinkedin, SiKeybase, OiMail } from 'oh-vue-icons/icons';
+import { SiGithub, SiLinkedin, SiKeybase, OiMail, OiChevronLeft, OiChevronRight  } from 'oh-vue-icons/icons';
 
 interface Project {
   title: string;
@@ -74,14 +80,16 @@ export default defineComponent({
           name: "oi-mail",
           link: "mailto:sankarshm@yahoo.com",
         }
-      ]
+      ],
+      selected: 0,
     };
   },
   beforeMount() {
-    addIcons(...Object.values({ SiGithub, SiLinkedin, SiKeybase, OiMail }) as any);
+    addIcons(...Object.values({ SiGithub, SiLinkedin, SiKeybase, OiMail, OiChevronLeft, OiChevronRight }) as any);
   },
   methods: {
     select(i: number) {
+      this.selected = i;
       if (window.innerWidth < 600) return;
       for (let j = 0; j < this.data.length; j++) {
         const p = (this.$refs[`p${j}`] as any).$el as HTMLElement;
@@ -98,6 +106,19 @@ export default defineComponent({
     contactFocus() {
       if (window.innerWidth < 600) return;
       document.querySelector("#contact")?.scrollIntoView();
+    },
+    prev() {
+      document.querySelector("#projects")?.scrollIntoView();
+      let newSelected = (this.selected - 1) % this.data.length;
+      if (newSelected < 0) newSelected = this.data.length - 1;
+      (this.$refs.three as any).click(newSelected+1);
+      this.select(newSelected);
+    },
+    next() {
+      document.querySelector("#projects")?.scrollIntoView();
+      let newSelected = (this.selected + 1) % this.data.length;
+      (this.$refs.three as any).click(newSelected+1);
+      this.select(newSelected);
     }
   }
 });
@@ -209,6 +230,36 @@ a:focus {
   filter: drop-shadow(0px 0px 2px #fbc31c);
 }
 
+.navigate-btn {
+  color: white;
+  position: absolute;
+  border-radius: 50%;
+  background-color: #2c2c2c;
+  box-shadow: 0 0 10px #2c2c2c;
+  pointer-events: all;
+  transform: scale(1);
+  transition: 400ms ease all;
+}
+
+.navigate-btn:hover {
+    transform: scale(1.2) !important;
+    color: #fbc31c;
+    cursor: pointer;
+}
+
+.navigate-btn svg {
+  width: 50px;
+  height: 50px;
+}
+
+.left {
+  margin: calc(100px + 20vh) 0 0 -25px;
+}
+
+.right {
+  margin: calc(100px + 20vh) 0 0 calc(85% - 25px); 
+}
+
 /* mobile */
 @media only screen and (max-width: 600px) {
   h1 {
@@ -249,6 +300,10 @@ a:focus {
     margin: 0 auto;
     width: 100px;
     text-align: center;
+  }
+
+  .navigate-btn {
+    display: none;
   }
 }
 </style>
