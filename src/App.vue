@@ -34,8 +34,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import Three from './components/Three.vue';
+import { defineComponent, defineAsyncComponent } from 'vue';
 import NavBar from './components/NavBar.vue';
 import Project from './components/Project.vue';
 
@@ -55,7 +54,7 @@ interface Project {
 
 export default defineComponent({
   components: {
-    Three,
+    Three: defineAsyncComponent(() => import('./components/Three.vue')),
     NavBar,
     Project,
     OhVueIcon,
@@ -88,8 +87,8 @@ export default defineComponent({
     addIcons(...Object.values({ SiGithub, SiLinkedin, SiKeybase, OiMail, OiChevronLeft, OiChevronRight }) as any);
   },
   methods: {
-    select(i: number) {
-      this.selected = i;
+    select(i: any) {
+      this.selected = i as number;
       if (window.innerWidth < 600) return;
       for (let j = 0; j < this.data.length; j++) {
         const p = (this.$refs[`p${j}`] as any).$el as HTMLElement;
